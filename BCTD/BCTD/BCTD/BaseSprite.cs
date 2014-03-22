@@ -26,15 +26,17 @@ namespace BCTD
             get { return position; }
         }
 
-        public BaseSprite(Vector2 pos, Rectangle rec)
+        public BaseSprite(Vector2 pos, Rectangle rec, Color color)
         {
             this.position = pos;
             this.rec = rec;
+            this.color = color;
+
+            texture = Game1.GameContent.Load<Texture2D>("Particle");
         }
 
         public virtual void Update(GameTime gameTime, Grid grid)
         {
-
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

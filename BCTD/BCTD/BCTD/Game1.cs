@@ -11,9 +11,8 @@ using Microsoft.Xna.Framework.Media;
 
 namespace BCTD
 {
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
+    public enum GameState { MAIN_MENU, PLAYING, GAME_OVER, CONSTRUCTING }
+
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
@@ -26,19 +25,23 @@ namespace BCTD
         {
             get { return gameContent; }
         }
+        static GameState state = GameState.CONSTRUCTING;
+        public static GameState MainState
+        {
+            get { return state; }
+        }
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            gameContent.RootDirectory = "Content";
-
-            grid = new Grid();
+            gameContent = new ContentManager(Content.ServiceProvider);
+            gameContent.RootDirectory = Content.RootDirectory;
         }
 
         protected override void Initialize()
         {
-
+            grid = new Grid();
             base.Initialize();
         }
 
@@ -50,14 +53,16 @@ namespace BCTD
 
         protected override void Update(GameTime gameTime)
         {
-
+            grid.Update(gameTime);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            GraphicsDevice.Clear(Color.Black);
+            spriteBatch.Begin();
+            grid.Draw(spriteBatch);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
