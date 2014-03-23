@@ -128,11 +128,17 @@ namespace BCTD
                         if (enemies[i] != null)
                         {
                             enemies[i].Update(gameTime, this);
-                            if (enemies[i].IsDead)
+                            if (enemies[i].atEnd)
+                            {
+                                lives--;
+                                enemies.RemoveAt(i);
+                            }
+                            else if (enemies[i].IsDead)
                             {
                                 funds += enemies[i].Price;
                                 enemies.RemoveAt(i);
                             }
+                            
                         }
                     }
                 }

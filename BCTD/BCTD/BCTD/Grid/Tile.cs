@@ -22,12 +22,6 @@ namespace BCTD
             get { return loc; }
         }
 
-        public Vector2 Center
-        {
-            get { return new Vector2(rec.X + (rec.Width /2), 
-                rec.Y + (rec.Height / 2)); }
-        }
-
         public Node TNode
         {
             get { return node; }
@@ -40,7 +34,7 @@ namespace BCTD
         }
 
         public Tile(Location loc, Grid gr)
-            : base(loc.Position, 
+            : base(new Vector2(loc.Column * gr.TileWidth + gr.Position.X, loc.Row * gr.TileHeight + gr.Position.Y),
                 new Rectangle((int)(loc.Column * gr.TileWidth + gr.Position.X), (int)(loc.Row * gr.TileHeight + gr.Position.Y), gr.TileWidth, gr.TileHeight))
         {
             this.loc = loc;

@@ -21,6 +21,15 @@ namespace BCTD
             get { return new Rectangle((int)position.X, (int) position.Y, rec.Width, rec.Height); }
         }
 
+        public Vector2 Center
+        {
+            get
+            {
+                return new Vector2(Rec.X + (rec.Width / 2),
+                    Rec.Y + (rec.Height / 2));
+            }
+        }
+
         public Vector2 Position
         {
             get { return position; }
