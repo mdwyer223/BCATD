@@ -13,6 +13,7 @@ namespace BCTD
     {
         protected List<Bullet> bullets;
         protected Color towerColor;
+        protected Enemy currentTarget;
 
         protected int bulletTimer, fireRate, damage = 10;
         
@@ -72,6 +73,12 @@ namespace BCTD
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, rec, color);
+            if(currentTarget != null)
+            {
+                spriteBatch.Draw(Game1.GameContent.Load<Texture2D>("turret"), new Rectangle((int)this.Center.X, (int)this.Center.Y, 30, 30), 
+                    null, Color.White, (float)Math.Atan2((currentTarget.Position.Y - Center.Y), (currentTarget.Position.X - Center.X)), 
+                    new Vector2(Game1.GameContent.Load<Texture2D>("turret").Width / 2, Game1.GameContent.Load<Texture2D>("turret").Height / 2), SpriteEffects.None, 0);
+            }
             spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y, rec.Width, 1), Color.Black);
             spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y + rec.Height - 1, rec.Width, 1), Color.Black);
             spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y, 1, rec.Height), Color.Black);
@@ -101,6 +108,7 @@ namespace BCTD
             }
             if (target != null && measureDis(Center, target.Position) < range)
             {
+                currentTarget = target;
                 bullets.Add(new Bullet(this.Center, target, BulletType.STRAIGHT, damage));
             }
         }
