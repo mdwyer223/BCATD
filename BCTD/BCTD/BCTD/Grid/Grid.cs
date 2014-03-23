@@ -17,11 +17,15 @@ namespace BCTD
         int rows, columns;
         float tWidth, tHeight;
 
+        double timer = 0;
+        int spawnTime = 3, spawnLimit, spawncounter;
+
         BuyMenu store;
         int funds = 500;
         SpriteFont font;
 
         int level = 1;
+        int lives = 10;
 
         Entrance enter;
         Exit exit;
@@ -39,6 +43,11 @@ namespace BCTD
         public Vector2 Position
         {
             get { return startPos; }
+        }
+
+        public List<Enemy> Enemies
+        {
+            get { return enemies; }
         }
 
         Random rand = new Random();
@@ -101,15 +110,25 @@ namespace BCTD
                     }
                 }
             }
-            for (int i = 0; i < enemies.Count; i++)
+
+            if (Game1.MainState == GameState.PLAYING)
             {
-                if (enemies[i] != null)
+                spawner(gameTime);
+                for (int i = 0; i < enemies.Count; i++)
                 {
-                    enemies[i].Update(gameTime, this);
+                    if (enemies[i] != null)
+                    {
+                        enemies[i].Update(gameTime, this);
+                        if (enemies[i].IsDead)
+                        {
+                            funds += enemies[i].Price;
+                            enemies.RemoveAt(i);
+                        }
+                    }
                 }
             }
-            //check timmer
-            // call spawn
+
+            
             store.Update(gameTime, this);
         }
 
@@ -131,6 +150,7 @@ namespace BCTD
                 }
             }
 
+            
             foreach (Enemy e in enemies)
             {
                 if (e != null)
@@ -157,12 +177,88 @@ namespace BCTD
                         funds -= tow.Cost;
                     }
                 }
-                
+                else if (store.BuyType == TowerType.HOMING)
+                {
+                    HomingTower tow = new HomingTower(loc, this);
+                    if (funds >= tow.Cost)
+                    {
+                        grid[loc.Column][loc.Row] = tow;
+                        funds -= tow.Cost;
+                    }
+                }
             }
             else
             {
                 Tile t = new Tile(loc, this);
                 grid[loc.Column][loc.Row] = t;
+            }
+
+            foreach (Enemy e in enemies)
+            {
+                if (e != null)
+                {
+                    e.setPath(this);
+                }
+            }
+        }
+
+        public void spawner(GameTime gametime)
+        {
+            if (level >= 30)
+                spawnLimit = 50;
+            else if (level >= 25)
+                spawnLimit = 45;
+            else if (level >= 20)
+                spawnLimit = 40;
+            else if (level >= 15)
+                spawnLimit = 30;
+            else if (level >= 10)
+                spawnLimit = 25;
+            else if (level >= 5)
+                spawnLimit = 15;
+            else
+                spawnLimit = 10;
+            //check timer
+            timer += gametime.ElapsedGameTime.TotalSeconds;
+            if (timer >= spawnTime && spawncounter < spawnLimit)
+            {
+                if (level >= 20)
+                {
+                    enemies.Add(new Enemy(this, enter));
+                    enemies.Add(new SpeedyEnemy(this, enter));
+                    enemies.Add(new TankEnemy(this, enter));
+                }
+                else if (level >= 15)
+                {
+                    //enemies.Add(new Enemy(this, enter));
+                    enemies.Add(new SpeedyEnemy(this, enter));
+                    enemies.Add(new TankEnemy(this, enter));
+                }
+                else if (level >= 10)
+                {
+                    enemies.Add(new Enemy(this, enter));
+                    //enemies.Add(new SpeedyEnemy(this, enter));
+                    enemies.Add(new TankEnemy(this, enter));
+                }
+                else if (level >= 5)
+                {
+                    enemies.Add(new Enemy(this, enter));
+                    enemies.Add(new SpeedyEnemy(this, enter));
+                    //enemies.Add(new TankEnemy(this, enter));
+                }
+                else
+                {
+                    enemies.Add(new Enemy(this, enter));
+                }
+                spawnTime = spawnTime - (level / 30);
+                spawncounter++;
+                timer = 0;
+            }
+            else if (spawncounter >= spawnLimit && enemies.Count == 0)
+            {
+                level++;
+                spawncounter = 0;
+                Game1.MainState = GameState.CONSTRUCTING;
             }
         }
 
@@ -195,7 +291,7 @@ namespace BCTD
 
                 foreach (Tile tile in getAdjacent(current.Loc))
                 {
-                    if (!listContains(closedL, tile.TNode) && tile.GetType() == typeof(Tile))
+                    if (!listContains(closedL, tile.TNode) && tile.GetType() == typeof(Tile))// TODO: or rock
                         if (!listContains(openL, tile.TNode))
                         {
                             Node node = tile.TNode;
@@ -217,18 +313,6 @@ namespace BCTD
                             }
                         }
                 }
-
-                //get lowest F on openL
-                //int lowF = int.MaxValue;
-                //Node lowNode = new Node(Vector2.Zero, Location.Zero);
-                //foreach (Node node in openL)
-                //{
-                //    if (node.F < lowF && !closedL.Contains(node))
-                //    {
-                //        lowNode = node;
-                //        lowF = node.F;
-                //    }
-                //}
 
                 int lowF = int.MaxValue;
                 Tile lowTile = new Tile(Location.Zero, this);
@@ -271,6 +355,11 @@ namespace BCTD
                 adj.Add(this.grid[loc.Column - 1][loc.Row]);
 
             return adj;
+        }
+
+        public Tile get(Location loc)
+        {
+            return grid[loc.Column][loc.Row];
         }
 
         public bool isValid(Location loc)

@@ -37,7 +37,14 @@ namespace BCTD
         {
             if (drawStats)
             {
-                spriteBatch.DrawString(font, "Tower\n10\n10m", new Vector2(rec.X + rec.Width, rec.Y), Color.White);
+                if (type == TowerType.TOWER)
+                {
+                    spriteBatch.DrawString(font, "Tower\n10\n10m", new Vector2(Rec.X + Rec.Width, rec.Y), Color.Gray);
+                }
+                else if (type == TowerType.HOMING)
+                {
+                    spriteBatch.DrawString(font, "Homing\n20\n30m", new Vector2(Rec.X + Rec.Width, rec.Y), Color.Yellow);
+                }
             }
             base.Draw(spriteBatch);
         }

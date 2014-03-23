@@ -9,41 +9,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BCTD
 {
-    public class Enemy : BaseSprite
+    public class TankEnemy : Enemy
     {
-        protected int health, maxHealth;
-        Rectangle healthRec;
-        protected int speed;
-
-        protected List<Node> path;
-
-        protected Vector2 velo;
-
-        public Vector2 Velocity
+        public TankEnemy(Grid gr, Entrance e)
+            : base(gr, e)
         {
-            get { return velo; }
-        }
-
-        public bool IsDead
-        {
-            get { return health <= 0; }
-        }
-
-        public int Price
-        {
-            get;
-            protected set;
-        }
-
-        public Enemy(Grid gr, Entrance e)
-            : base(Vector2.Zero, new Rectangle(0, 0, 10, 10))
-        {
-            Price = 50;
+            Price = 100;
             path = gr.findPath();
             this.position = e.Center;
-            color = Color.Purple;
+            color = Color.Blue;
 
-            maxHealth = health = 70;
+            maxHealth = health = 200;
         }
 
         public override void Update(GameTime gameTime, Grid grid)
@@ -52,12 +28,15 @@ namespace BCTD
                 return;
             if (path.Count > 0)
             {
-                path[0].Position = new Vector2(path[0].Loc.Column * grid.TileWidth + grid.Position.X + (grid.TileWidth / 2), 
+                path[0].Position = new Vector2(path[0].Loc.Column * grid.TileWidth + grid.Position.X + (grid.TileWidth / 2),
                                     path[0].Loc.Row * grid.TileHeight + grid.Position.Y + (grid.TileHeight / 2));
-                                
+
                 velo = path[0].Position - this.position;
                 if (!path[0].Position.Equals(position))
+                {
                     velo.Normalize();
+                    velo *= .25f;
+                }
                 else
                     velo = Vector2.Zero;
 
@@ -67,7 +46,7 @@ namespace BCTD
                 if (measureDis(path[0].Position) < 2)
                 {
                     path.RemoveAt(0);
-                }                               
+                }
 
                 // create method for moveing(tile on), death(position)
             }
@@ -82,20 +61,6 @@ namespace BCTD
 
             base.Draw(spriteBatch);
             spriteBatch.Draw(texture, new Rectangle(Rec.X, Rec.Y - 2, (int)(Rec.Width * ((float)health / (float)maxHealth) + .5f), 2), Color.Red);
-        }
-
-        public void setPath(Grid gr)
-        {
-            path = gr.findPath();
-        }
-
-        public void damage(int d)
-        {
-            health -= d;
-            if (health < 0)
-            {
-                health = 0;
-            }
         }
     }
 }

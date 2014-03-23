@@ -9,34 +9,22 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BCTD
 {
-    public class Tower : Tile
+    public class HomingTower : Tower
     {
-        protected List<Bullet> bullets;
-        protected Color towerColor;
-
-        protected int bulletTimer, fireRate, damage = 10;
-        
-        protected int cost = 0, range;
-
-        public int Cost
-        {
-            get { return cost; }
-        }
-
-        public Tower(Location loc, Grid gr)
+        public HomingTower(Location loc, Grid gr)
             : base(loc, gr)
         {
             bullets = new List<Bullet>();
-            towerColor = Color.Gray;
+            towerColor = Color.Yellow;
 
             bulletTimer = fireRate = 50;
 
-            cost = 100;
-            range = 200;
+            cost = 200;
         }
 
         public override void Update(GameTime gameTime, Grid grid)
         {
+            damage = 20;
             if (Game1.MainState == GameState.PLAYING)
             {
                 if (bulletTimer < fireRate)
@@ -84,7 +72,7 @@ namespace BCTD
             }
         }
 
-        protected virtual void spawnBullet(List<Enemy> enemies)
+        protected override void spawnBullet(List<Enemy> enemies)
         {
             Enemy target = null;
             float smallestDistance = int.MaxValue;
@@ -99,9 +87,9 @@ namespace BCTD
                     }
                 }
             }
-            if (target != null && measureDis(Center, target.Position) < range)
+            if (target != null)
             {
-                bullets.Add(new Bullet(this.Center, target, BulletType.STRAIGHT, damage));
+                bullets.Add(new Bullet(this.Center, target, BulletType.HOMING, damage));
             }
         }
     }

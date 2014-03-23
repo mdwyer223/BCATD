@@ -30,6 +30,7 @@ namespace BCTD
         public static GameState MainState
         {
             get { return state; }
+            set { state = value; }
         }
 
         public Game1()
