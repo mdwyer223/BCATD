@@ -17,7 +17,11 @@ namespace BCTD
         int rows, columns;
         float tWidth, tHeight;
 
-        bool addTower = false;
+        BuyMenu store;
+        int funds = 500;
+        SpriteFont font;
+
+        int level = 1;
 
         public Grid()
         {
@@ -29,6 +33,9 @@ namespace BCTD
             tWidth = 30;
 
             generateTiles();
+
+            store = new BuyMenu(new Vector2(startPos.X, startPos.Y + 10 + (rows * tHeight)));
+            font = Game1.GameContent.Load<SpriteFont>("DisplayFont");
         }
 
         public Grid(int rows, int columns)
@@ -37,15 +44,12 @@ namespace BCTD
             this.rows = rows;
             this.columns = columns;
             generateTiles();
+            store = new BuyMenu(new Vector2(startPos.X, startPos.Y + 10 + (rows * tHeight)));
+            font = Game1.GameContent.Load<SpriteFont>("DisplayFont");
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            if (!addTower)
-            {
-                grid[0][0] = new Tower(grid[0][0].Location, (int)tWidth);
-                addTower = true;
-            }
             for (int x = 0; x < grid.Count; x++)
             {
                 for (int y = 0; y < grid[x].Count; y++)
@@ -56,6 +60,8 @@ namespace BCTD
                     }
                 }
             }
+
+            store.Update(gameTime, this);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
@@ -75,11 +81,32 @@ namespace BCTD
                     }
                 }
             }
+
+            store.Draw(spriteBatch);
+            spriteBatch.DrawString(font, "$" + funds, new Vector2(3, 3), Color.White);
+            spriteBatch.DrawString(font, "Level: " + level, new Vector2(800 - font.MeasureString("Level: 9999").X, 3), Color.White);
         }
 
-        public void selectTile(Tile t)
+        public void selectTile(Location loc, Tile check)
         {
-
+            if (check.GetType() == typeof(Tile))
+            {
+                if (store.BuyType == TowerType.TOWER)
+                {
+                    Tower tow = new Tower(loc, (int)tHeight);
+                    if (funds >= tow.Cost)
+                    {
+                        grid[loc.Column][loc.Row] = tow;
+                        funds -= tow.Cost;
+                    }
+                }
+                
+            }
+            else
+            {
+                Tile t = new Tile(loc, new Rectangle((int)loc.Position.X, (int)loc.Position.Y, (int)tWidth, (int)tHeight), Color.White);
+                grid[loc.Column][loc.Row] = t;
+            }
         }
 
         private void generateTiles()

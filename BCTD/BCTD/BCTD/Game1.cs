@@ -19,6 +19,7 @@ namespace BCTD
         SpriteBatch spriteBatch;
 
         Grid grid;
+        MouseState mouse;
 
         static ContentManager gameContent;
         public static ContentManager GameContent
@@ -53,6 +54,8 @@ namespace BCTD
 
         protected override void Update(GameTime gameTime)
         {
+            mouse = Mouse.GetState();
+
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
                 state = GameState.PLAYING;
@@ -70,6 +73,7 @@ namespace BCTD
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
             grid.Draw(spriteBatch);
+            spriteBatch.Draw(Content.Load<Texture2D>("cursor"), new Rectangle(mouse.X, mouse.Y, 10, 10), Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }

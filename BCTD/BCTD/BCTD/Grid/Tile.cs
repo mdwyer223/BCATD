@@ -22,8 +22,8 @@ namespace BCTD
 
         public Vector2 Center
         {
-            get { return new Vector2((loc.Column * rec.Width) + (rec.Width / 2) + position.X, 
-                (loc.Row * rec.Height) + (rec.Height / 2) + position.Y); }
+            get { return new Vector2(rec.X + (rec.Width /2), 
+                rec.Y + (rec.Height / 2)); }
         }
 
         public bool Open
@@ -47,11 +47,17 @@ namespace BCTD
                     this.color = Color.Green;
                     if (mouse.LeftButton.Equals(ButtonState.Pressed))
                     {
-                        grid.selectTile(this);
+                        grid.selectTile(loc, this);
                     }
                 }
                 else
+                {
                     this.color = Color.Red;
+                    if (mouse.RightButton.Equals(ButtonState.Pressed))
+                    {
+                        grid.selectTile(loc, this);
+                    }
+                }
             }
             else
             {

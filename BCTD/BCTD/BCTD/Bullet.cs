@@ -14,6 +14,11 @@ namespace BCTD
         protected Vector2 velo;
         protected int speed = 3;
 
+        public bool OffScreen
+        {
+            get { return position.X < 0 || position.Y < 0 || position.X > 800 || position.Y > 480; }
+        }
+
         public Bullet(Vector2 center, Enemy target)
             : base(new Vector2(center.X, center.Y), new Rectangle((int)center.X,(int)center.Y,3,3), Color.Orange)
         {

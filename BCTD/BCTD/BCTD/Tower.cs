@@ -14,7 +14,14 @@ namespace BCTD
         List<Bullet> bullets;
         Color towerColor;
 
-        int bulletTimer, fireRate;
+        int bulletTimer, fireRate, damage;
+        
+        protected int cost = 0;
+
+        public int Cost
+        {
+            get { return cost; }
+        }
 
         public Tower(Location loc, int size)
             : base(loc, new Rectangle((int)loc.Position.X, (int)loc.Position.Y, size, size), Color.Gray)
@@ -23,6 +30,8 @@ namespace BCTD
             towerColor = Color.Gray;
 
             bulletTimer = fireRate = 50;
+
+            cost = 100;
         }
 
         public override void Update(GameTime gameTime, Grid grid)
@@ -46,6 +55,10 @@ namespace BCTD
                     if (bullets[i] != null)
                     {
                         bullets[i].Update(gameTime, grid);
+                        if (bullets[i].OffScreen)
+                        {
+                            bullets.RemoveAt(i);
+                        }
                     }
                 }
             }
@@ -58,6 +71,10 @@ namespace BCTD
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, rec, color);
+            spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y, rec.Width, 1), Color.Black);
+            spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y + rec.Height - 1, rec.Width, 1), Color.Black);
+            spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y, 1, rec.Height), Color.Black);
+            spriteBatch.Draw(texture, new Rectangle(rec.X + rec.Width - 1, rec.Y, 1, rec.Height), Color.Black);
 
             foreach (Bullet b in bullets)
             {
