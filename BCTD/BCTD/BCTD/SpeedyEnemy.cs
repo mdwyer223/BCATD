@@ -9,41 +9,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BCTD
 {
-    public class Enemy : BaseSprite
+    public class SpeedyEnemy : Enemy
     {
-        protected int health, maxHealth;
-        Rectangle healthRec;
-        protected int speed;
-
-        protected List<Node> path;
-
-        protected Vector2 velo;
-
-        public Vector2 Velocity
+        public SpeedyEnemy(Grid gr, Entrance e)
+            : base(gr, e)
         {
-            get { return velo; }
-        }
-
-        public bool IsDead
-        {
-            get { return health <= 0; }
-        }
-
-        public int Price
-        {
-            get;
-            protected set;
-        }
-
-        public Enemy(Grid gr, Entrance e)
-            : base(Vector2.Zero, new Rectangle(0, 0, 10, 10))
-        {
-            Price = 50;
+            Price = 25;
             path = gr.findPath();
             this.position = e.Center;
-            color = Color.Purple;
+            color = Color.LightGreen;
 
-            maxHealth = health = 70;
+            maxHealth = health = 30;
         }
 
         public override void Update(GameTime gameTime, Grid grid)
@@ -57,7 +33,10 @@ namespace BCTD
                                 
                 velo = path[0].Position - this.position;
                 if (!path[0].Position.Equals(position))
+                {
                     velo.Normalize();
+                    velo *= 2;
+                }
                 else
                     velo = Vector2.Zero;
 
@@ -82,20 +61,6 @@ namespace BCTD
 
             base.Draw(spriteBatch);
             spriteBatch.Draw(texture, new Rectangle(Rec.X, Rec.Y - 2, (int)(Rec.Width * ((float)health / (float)maxHealth) + .5f), 2), Color.Red);
-        }
-
-        public void setPath(Grid gr)
-        {
-            path = gr.findPath();
-        }
-
-        public void damage(int d)
-        {
-            health -= d;
-            if (health < 0)
-            {
-                health = 0;
-            }
         }
     }
 }

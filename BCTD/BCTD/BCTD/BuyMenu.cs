@@ -30,6 +30,7 @@ namespace BCTD
             font = Game1.GameContent.Load<SpriteFont>("StoreFont");
 
             icons.Add(new StoreIcon(bottomOfGrid, new Rectangle((int)bottomOfGrid.X, (int)bottomOfGrid.Y, 30, 30), TowerType.TOWER));
+            icons.Add(new StoreIcon(new Vector2((bottomOfGrid.X + 80), bottomOfGrid.Y), new Rectangle((int)(bottomOfGrid.X + 80), (int)bottomOfGrid.Y, 30,30), TowerType.HOMING));
         }
 
         public void Update(GameTime gameTime, Grid grid)

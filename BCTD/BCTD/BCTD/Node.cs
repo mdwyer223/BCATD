@@ -37,8 +37,9 @@ namespace BCTD
         public Vector2 Position
         {
             get;
-            protected set;
+            set;
         }
+
         public Location Loc
         {
             get;

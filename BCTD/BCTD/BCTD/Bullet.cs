@@ -9,31 +9,65 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BCTD
 {
+    public enum BulletType { STRAIGHT, HOMING, SHATTER };
+
     public class Bullet : BaseSprite
     {
+        protected BulletType type;
         protected Vector2 velo;
-        protected int speed = 3;
+        protected Enemy target;
+        protected int timeToHit = 2, damage = 0;
+
+        Random rand = new Random();
+
+        bool hitTarget;
 
         public bool OffScreen
         {
-            get { return position.X < 0 || position.Y < 0 || position.X > 800 || position.Y > 480; }
+            get { return position.X < 0 || position.Y < 0 || position.X > 800 || position.Y > 480 || hitTarget; }
         }
 
 
-        public Bullet(Vector2 center, Enemy target)
+        public Bullet(Vector2 center, Enemy target, BulletType t, int damage)
             : base(center, new Rectangle((int)center.X,(int)center.Y,3,3))
         {
-            velo = new Vector2(-1, 0);
-            Vector2 fakeTarget = new Vector2(400, 240);
-            velo = fakeTarget - center;
+            type = t;
+            this.target = target;
+            this.damage = damage;
+            if (t == BulletType.STRAIGHT)
+            {
+                if (rand.Next(1, 5) != 4)
+                {
+                    Vector2 tPos = target.Position + (target.Velocity * (timeToHit * 16));
+                    velo = new Vector2(tPos.X - center.X, tPos.Y - center.Y);
+                    velo = velo / (timeToHit * 16);
+                }
+                else
+                {
+                    Vector2 tPos = target.Position + (target.Velocity * (timeToHit * 16));
+                    velo = new Vector2(tPos.X - center.X, tPos.Y - center.Y);
+                    velo = velo / (float)(timeToHit * (16 * rand.NextDouble()));
+                }
+            }
             color = Color.Orange;
-            velo.Normalize();
+            //velo.Normalize();
         }
 
         public override void Update(GameTime gameTime, Grid grid)
         {
-            this.position += (velo * speed);
+            if (type == BulletType.HOMING)
+            {
+                velo = new Vector2(target.Position.X - this.position.X, target.Position.Y - this.position.Y);
+                velo.Normalize();
+                velo *= 1.25f;
+            }
+            this.position += (velo);
             //check collision
+            if (this.Rec.Intersects(target.Rec))
+            {
+                target.damage(damage);
+                hitTarget = true;
+            }
             base.Update(gameTime, grid);
         }
     }

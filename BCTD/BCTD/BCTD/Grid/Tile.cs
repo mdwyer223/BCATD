@@ -55,17 +55,13 @@ namespace BCTD
                 if(Game1.MainState == GameState.CONSTRUCTING)
                     if (this.GetType() == typeof(Tile))
                     {
-                        if (grid.testPath(node) != null)
+                        this.color = Color.Green;
+                        if (mouse.LeftButton.Equals(ButtonState.Pressed))
                         {
-                            this.color = Color.Green;
-                            if (mouse.LeftButton.Equals(ButtonState.Pressed))
+                            if (grid.testPath(node) != null)
                             {
                                 grid.selectTile(loc, this);
                             }
-                        }
-                        else
-                        {
-                            this.color = Color.Red;
                         }
                     }
                     else
