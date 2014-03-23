@@ -15,6 +15,8 @@ namespace BCTD
         protected Location loc;
         protected MouseState mouse;
 
+        Node node;
+
         public Location Location
         {
             get { return loc; }
@@ -26,6 +28,11 @@ namespace BCTD
                 (loc.Row * rec.Height) + (rec.Height / 2)); }
         }
 
+        public Node TNode
+        {
+            get { return node; }
+        }
+
         public bool Open
         {
             get { return this.GetType() == typeof(Tile); }
@@ -35,6 +42,7 @@ namespace BCTD
             : base(loc.Position, 
                 new Rectangle((int)(loc.Column * gr.TileWidth + gr.Position.X), (int)(loc.Row * gr.TileHeight + gr.Position.Y), gr.TileWidth, gr.TileHeight))
         {
+            node = new Node(Position);
         }
 
         public override void Update(GameTime gameTime, Grid grid)

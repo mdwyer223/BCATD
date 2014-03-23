@@ -17,6 +17,9 @@ namespace BCTD
         int rows, columns;
         float tWidth, tHeight;
 
+        Entrance enter;
+        Exit exit;
+
         public int TileWidth
         {
             get { return (int)tWidth; }
@@ -44,9 +47,13 @@ namespace BCTD
             tWidth = 30;            
 
             generateTiles();
+            int row;
 
-            // this.add(new Entrance(randomLoc);
-            // this.add(new Exit(randomLoc);
+            row = rand.Next(rows);
+            grid[row][0] = enter = new Entrance(new Location(row, 0),this);
+
+            row = rand.Next(rows);
+            grid[row][columns - 1] = exit = new Exit(new Location(row, columns - 1), this);
         }
 
         public Grid(int rows, int columns)
@@ -57,8 +64,12 @@ namespace BCTD
 
             generateTiles();
 
-            // this.add(new Entrance(randomLoc);
-            // this.add(new Exit(randomLoc);
+            int row;
+            row = rand.Next(rows);
+            grid[row][0] = enter = new Entrance(new Location(row, 0), this);
+
+            row = rand.Next(rows);
+            grid[row][columns - 1] = exit = new Exit(new Location(row, columns - 1), this);
         }
 
         public virtual void Update(GameTime gameTime)
@@ -101,18 +112,44 @@ namespace BCTD
             }
         }
 
-        public List<Tile> findPath()
+        public List<Node> findPath()
         {
-            List<Tile> openL, closedL;
-            Tile current = new Tile(Location.Zero, this);
+            List<Node> openL, closedL;
+            Tile current = enter;
 
-            openL = new List<Tile>();
-            closedL = new List<Tile>();
+            openL = new List<Node>();
+            closedL = new List<Node>();
 
-            {
+            {               
 
+                foreach (Tile tile in getAdjacent(current.Location))
+                {
+                    if (!closedL.Contains(tile.TNode) && tile.GetType() == typeof(Tile))
+                        if (!openL.Contains(tile.TNode))
+                        {
+                            Node node = tile.TNode;
+                            node.parent = current.TNode;
+                            node.G = 10 + current.TNode.G;
 
-                // path stuff
+                            int xDis = Math.Abs(node.Loc.Column - exit.Location.Column);
+                            int yDis = Math.Abs(node.Loc.Row - exit.Location.Row);
+
+                            node.H = xDis + yDis;
+                            openL.Add(node);
+                        }
+                        else
+                        {
+                            if (1 + current.TNode.G > tile.TNode.G)
+                            {
+                                tile.TNode.parent = current.TNode;
+                                tile.TNode.G = 1 + tile.TNode.G;
+                            }
+                        }
+                }
+
+                //get lowest F on openL
+                //current = LowestF
+                //closedL.add(current)
 
             }
             while (current.GetType() != typeof(Exit) || openL.Count > 0);
@@ -125,9 +162,28 @@ namespace BCTD
 
         }
 
-        public Tile getAdjacent(Location loc)
+        public List<Tile> getAdjacent(Location loc)
         {
-            return new Tile(Location.Zero, this);
+            List<Tile> adj = new List<Tile>();
+            if (isValid(new Location(loc.Row + 1, loc.Column)))
+                adj.Add(this.grid[loc.Row + 1][ loc.Column]);
+
+            if (isValid(new Location(loc.Row - 1, loc.Column)))
+                adj.Add(this.grid[loc.Row + 1][loc.Column]);
+
+            if (isValid(new Location(loc.Row, loc.Column + 1)))
+                adj.Add(this.grid[loc.Row + 1][loc.Column]);
+
+            if (isValid(new Location(loc.Row, loc.Column - 1)))
+                adj.Add(this.grid[loc.Row + 1][loc.Column]);
+
+            return adj;
         }
+
+        public bool isValid(Location loc)
+        {
+            return loc.Column >= 0 && loc.Column < columns && loc.Row >= 0 && loc.Row < rows;
+        }
+
     }
 }
