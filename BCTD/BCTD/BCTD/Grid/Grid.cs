@@ -14,6 +14,8 @@ namespace BCTD
         Vector2 startPos;
         List<List<Tile>> grid;
         List<Enemy> enemies;
+        Rectangle backRec;
+        Texture2D background;
         int rows, columns;
         float tWidth, tHeight;
 
@@ -67,6 +69,9 @@ namespace BCTD
 
             generateTiles();
             randomizeLandscape();
+
+            backRec = new Rectangle((int)startPos.X, (int)startPos.Y, (int)(columns * tWidth), (int)(rows * tHeight));
+            background = Game1.GameContent.Load<Texture2D>("background");
 
             store = new BuyMenu(new Vector2(startPos.X, startPos.Y + 10 + (rows * tHeight)));
             font = Game1.GameContent.Load<SpriteFont>("DisplayFont");
@@ -146,6 +151,8 @@ namespace BCTD
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
+            spriteBatch.Draw(background, backRec, Color.White);
+
             for (int i = 0; i < grid.Count; i++)
             {
                 foreach (Tile t in grid[i])
@@ -328,12 +335,12 @@ namespace BCTD
                 if (rand.Next(1, 3) == 1)
                 {
                     int y = rand.Next(23), x = rand.Next(10);
-                    grid[y][x] = new Rock(grid[y][x].Location, this);
+                    grid[y][x] = new Water(grid[y][x].Location, this);
                 }
                 else
                 {
                     int y = rand.Next(23), x = rand.Next(10);
-                    grid[y][x] = new Mountain(grid[y][x].Location, this);
+                    grid[y][x] = new Rock(grid[y][x].Location, this);
                 }
             }
         }
@@ -367,7 +374,7 @@ namespace BCTD
 
                 foreach (Tile tile in getAdjacent(current.Loc))
                 {
-                    if (!listContains(closedL, tile.TNode) && (tile.GetType() == typeof(Tile) || tile.GetType() == typeof(Entrance) || tile.GetType() == typeof(Exit) || tile.GetType() == typeof(Rock)))
+                    if (!listContains(closedL, tile.TNode) && (tile.GetType() == typeof(Tile) || tile.GetType() == typeof(Entrance) || tile.GetType() == typeof(Exit) || tile.GetType() == typeof(Water)))
                     {
                         if (!listContains(openL, tile.TNode))
                         {
@@ -448,7 +455,7 @@ namespace BCTD
 
                 foreach (Tile tile in getAdjacent(current.Loc))
                 {
-                    if (!listContains(closedL, tile.TNode) && (tile.GetType() == typeof(Tile) || tile.GetType() == typeof(Entrance) || tile.GetType() == typeof(Exit) || tile.GetType() == typeof(Rock)))
+                    if (!listContains(closedL, tile.TNode) && (tile.GetType() == typeof(Tile) || tile.GetType() == typeof(Entrance) || tile.GetType() == typeof(Exit) || tile.GetType() == typeof(Water)))
                     {
                         if (!listContains(openL, tile.TNode))
                         {

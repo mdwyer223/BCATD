@@ -9,17 +9,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BCTD
 {
-    public class Rock : Tile
+    public class Water : Tile
     {
-        public Rock(Location loc, Grid gr)
+        public Water(Location loc, Grid gr)
             : base(loc, gr)
         {
-            texture = Game1.GameContent.Load<Texture2D>("rock");
+            texture = Game1.GameContent.Load<Texture2D>("water");
         }
 
         public override void Update(GameTime gameTime, Grid grid)
         {
-            color = Color.Crimson;     
+            color = Color.SandyBrown;  
         }
 
         public override void Draw(SpriteBatch spriteBatch)
