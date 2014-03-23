@@ -30,9 +30,9 @@ namespace BCTD
             get { return column; }
         }
 
-        public Location(Vector2 pos, int row, int column)
+        public Location(Vector2 gridStart, int row, int column, int size)
         {
-            this.pos = pos;
+            this.pos = new Vector2(column * size, row * size) + gridStart;
             this.row = row;
             this.column = column;
         }

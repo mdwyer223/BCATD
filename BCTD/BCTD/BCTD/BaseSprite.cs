@@ -18,7 +18,7 @@ namespace BCTD
 
         public Rectangle Rec
         {
-            get { return rec; }
+            get { return new Rectangle((int)position.X, (int) position.Y, rec.Width, rec.Height); }
         }
 
         public Vector2 Position
@@ -43,7 +43,7 @@ namespace BCTD
         {
             if (texture != null)
             {
-                spriteBatch.Draw(texture, rec, color);
+                spriteBatch.Draw(texture, Rec, color);
             }
         }
     }

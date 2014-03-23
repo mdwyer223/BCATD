@@ -53,6 +53,14 @@ namespace BCTD
 
         protected override void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+            {
+                state = GameState.PLAYING;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                state = GameState.CONSTRUCTING;
+            }
             grid.Update(gameTime);
             base.Update(gameTime);
         }

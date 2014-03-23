@@ -17,6 +17,8 @@ namespace BCTD
         int rows, columns;
         float tWidth, tHeight;
 
+        bool addTower = false;
+
         public Grid()
         {
             grid = new List<List<Tile>>();
@@ -39,6 +41,11 @@ namespace BCTD
 
         public virtual void Update(GameTime gameTime)
         {
+            if (!addTower)
+            {
+                grid[0][0] = new Tower(grid[0][0].Location, (int)tWidth);
+                addTower = true;
+            }
             for (int x = 0; x < grid.Count; x++)
             {
                 for (int y = 0; y < grid[x].Count; y++)
@@ -57,10 +64,22 @@ namespace BCTD
             {
                 foreach (Tile t in grid[i])
                 {
-                    if (Game1.MainState != GameState.PLAYING && t != null)
+                    if (t.GetType() == typeof(Tile))
+                    {
+                        if (Game1.MainState != GameState.PLAYING && t != null)
+                            t.Draw(spriteBatch);
+                    }
+                    else
+                    {
                         t.Draw(spriteBatch);
+                    }
                 }
             }
+        }
+
+        public void selectTile(Tile t)
+        {
+
         }
 
         private void generateTiles()
@@ -71,7 +90,7 @@ namespace BCTD
                 grid.Add(new List<Tile>());
                 for (int y = 0; y < rows; y++)
                 {
-                    Location loc = new Location(new Vector2((x * tWidth), y * tHeight) + startPos, y, x); 
+                    Location loc = new Location(startPos, y, x, (int)tWidth); 
                     grid[x].Add(new Tile(loc, new Rectangle((int)loc.Position.X, (int)loc.Position.Y, (int)tWidth, (int)tHeight), Color.White));
                 }
             }

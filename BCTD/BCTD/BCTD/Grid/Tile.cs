@@ -22,8 +22,8 @@ namespace BCTD
 
         public Vector2 Center
         {
-            get { return new Vector2((loc.Column * rec.Width) + (rec.Width / 2), 
-                (loc.Row * rec.Height) + (rec.Height / 2)); }
+            get { return new Vector2((loc.Column * rec.Width) + (rec.Width / 2) + position.X, 
+                (loc.Row * rec.Height) + (rec.Height / 2) + position.Y); }
         }
 
         public bool Open
@@ -34,6 +34,7 @@ namespace BCTD
         public Tile(Location loc, Rectangle rec, Color color)
             :base (loc.Position, rec, color)
         {
+            this.loc = loc;
         }
 
         public override void Update(GameTime gameTime, Grid grid)
@@ -44,6 +45,10 @@ namespace BCTD
                 if (this.GetType() == typeof(Tile))
                 {
                     this.color = Color.Green;
+                    if (mouse.LeftButton.Equals(ButtonState.Pressed))
+                    {
+                        grid.selectTile(this);
+                    }
                 }
                 else
                     this.color = Color.Red;
