@@ -11,10 +11,52 @@ namespace BCTD
 {
     public class Enemy : BaseSprite
     {
-        public Enemy()
-            : base(Vector2.Zero, new Rectangle(0, 0, 0, 0), Color.White)
-        {
+        protected int health, maxHealth;
+        Rectangle healthRec;
 
+
+        private List<Node> path;
+
+        private Vector2 velo;
+
+        public Vector2 Velocity
+        {
+            get { return velo; }
+        }
+
+        public int Price
+        {
+            get;
+            protected set;
+        }
+
+        public Enemy(Grid gr, Entrance e)
+            : base(Vector2.Zero, new Rectangle(0, 0, 0, 0))
+        {
+            Price = 1;
+            path = gr.findPath();
+            this.position = e.Center;
+        }
+
+        public override void Update(GameTime gameTime, Grid grid)
+        {
+            if (health <= 0)
+                return;
+            //moveTo path(0)
+            //if in range of node path.remove(0);
+
+            // create method for moveing(tile on), death(position),
+
+            base.Update(gameTime, grid);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (health <= 0)
+                return;
+
+            base.Draw(spriteBatch);
+            spriteBatch.Draw(texture, new Rectangle(Rec.X, Rec.Y - 10, (int)(Rec.Width * (health / maxHealth) + .5f), 10), Color.Red);
         }
     }
 }

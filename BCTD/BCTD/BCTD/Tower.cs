@@ -23,8 +23,8 @@ namespace BCTD
             get { return cost; }
         }
 
-        public Tower(Location loc, int size)
-            : base(loc, new Rectangle((int)loc.Position.X, (int)loc.Position.Y, size, size), Color.Gray)
+        public Tower(Location loc, Grid gr)
+            : base(loc, gr)
         {
             bullets = new List<Bullet>();
             towerColor = Color.Gray;

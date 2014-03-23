@@ -19,12 +19,14 @@ namespace BCTD
             get { return position.X < 0 || position.Y < 0 || position.X > 800 || position.Y > 480; }
         }
 
+
         public Bullet(Vector2 center, Enemy target)
-            : base(new Vector2(center.X, center.Y), new Rectangle((int)center.X,(int)center.Y,3,3), Color.Orange)
+            : base(center, new Rectangle((int)center.X,(int)center.Y,3,3))
         {
             velo = new Vector2(-1, 0);
             Vector2 fakeTarget = new Vector2(400, 240);
             velo = fakeTarget - center;
+            color = Color.Orange;
             velo.Normalize();
         }
 

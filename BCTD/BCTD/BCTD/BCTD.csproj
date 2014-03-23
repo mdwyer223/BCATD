@@ -111,6 +111,8 @@
     <Compile Include="Bullet.cs" />
     <Compile Include="BuyMenu.cs" />
     <Compile Include="Enemy.cs" />
+    <Compile Include="Grid\Entrance.cs" />
+    <Compile Include="Grid\Exit.cs" />
     <Compile Include="Grid\Grid.cs" />
     <Compile Include="Grid\Tile.cs" />
     <Compile Include="Location.cs" />

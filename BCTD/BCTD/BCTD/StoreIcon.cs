@@ -27,7 +27,7 @@ namespace BCTD
         }
 
         public StoreIcon(Vector2 pos, Rectangle rec, TowerType type)
-            : base(pos, rec, Color.White)
+            : base(pos, rec)
         {
             this.type = type;
             font = Game1.GameContent.Load<SpriteFont>("StoreFont");
