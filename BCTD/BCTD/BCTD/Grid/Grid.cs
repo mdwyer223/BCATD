@@ -21,10 +21,14 @@ namespace BCTD
         int funds = 500;
         SpriteFont font;
 
-        int level = 1;
+        int level = 1, timeBetweenLevels = 10;
+        float levelTimer = 0;
 
         Entrance enter;
         Exit exit;
+
+        int delay = 50, delayTimer = 0;
+
 
         public int TileWidth
         {
@@ -54,6 +58,7 @@ namespace BCTD
             tWidth = 30;            
 
             generateTiles();
+            randomizeLandscape();
 
             store = new BuyMenu(new Vector2(startPos.X, startPos.Y + 10 + (rows * tHeight)));
             font = Game1.GameContent.Load<SpriteFont>("DisplayFont");
@@ -76,6 +81,7 @@ namespace BCTD
             this.columns = columns;
 
             generateTiles();
+            randomizeLandscape();
             store = new BuyMenu(new Vector2(startPos.X, startPos.Y + 10 + (rows * tHeight)));
             font = Game1.GameContent.Load<SpriteFont>("DisplayFont");
 
@@ -91,26 +97,50 @@ namespace BCTD
 
         public virtual void Update(GameTime gameTime)
         {
-            for (int x = 0; x < grid.Count; x++)
+            if (delayTimer >= delay)
             {
-                for (int y = 0; y < grid[x].Count; y++)
+                delayTimer = delay;
+                for (int x = 0; x < grid.Count; x++)
                 {
-                    if (grid[x][y] != null)
+                    for (int y = 0; y < grid[x].Count; y++)
                     {
-                        grid[x][y].Update(gameTime, this);
+                        if (grid[x][y] != null)
+                        {
+                            grid[x][y].Update(gameTime, this);
+                        }
                     }
                 }
-            }
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                if (enemies[i] != null)
+                for (int i = 0; i < enemies.Count; i++)
                 {
-                    enemies[i].Update(gameTime, this);
+                    if (enemies[i] != null)
+                    {
+                        enemies[i].Update(gameTime, this);
+                    }
                 }
+                if (Game1.MainState == GameState.CONSTRUCTING)
+                {
+                    if (levelTimer <= timeBetweenLevels)
+                    {
+                        levelTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    }
+                    else
+                    {
+                        levelTimer = 0;
+                        Game1.MainState = GameState.PLAYING;
+                    }
+                }
+                else
+                {
+                    levelTimer = 0;
+                }
+                //check timmer
+                // call spawn
+                store.Update(gameTime, this);
             }
-            //check timmer
-            // call spawn
-            store.Update(gameTime, this);
+            else
+            {
+                delayTimer++;
+            }
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
@@ -139,25 +169,45 @@ namespace BCTD
                 }
             }
 
+
             store.Draw(spriteBatch);
             spriteBatch.DrawString(font, "$" + funds, new Vector2(3, 3), Color.White);
             spriteBatch.DrawString(font, "Level: " + level, new Vector2(800 - font.MeasureString("Level: 9999").X, 3), Color.White);
+            spriteBatch.DrawString(font, "Next wave: " + (int)(timeBetweenLevels - levelTimer) + "s",
+                new Vector2(400 - (font.MeasureString("Next wave: 000s").X / 2), 3), Color.White);
         }
 
         public void selectTile(Location loc, Tile check)
         {
-            if (check.GetType() == typeof(Tile))
+            if (Game1.MainState == GameState.CONSTRUCTING)
             {
-                if (store.BuyType == TowerType.TOWER)
+                if (check.GetType() == typeof(Tile))
                 {
-                    Tower tow = new Tower(loc, this);
-                    if (funds >= tow.Cost)
+                    if (store.BuyType == TowerType.TOWER)
                     {
-                        grid[loc.Column][loc.Row] = tow;
-                        funds -= tow.Cost;
+                        Tower tow = new Tower(loc, this);
+                        if (funds >= tow.Cost)
+                        {
+                            grid[loc.Column][loc.Row] = tow;
+                            funds -= tow.Cost;
+                        }
                     }
+
                 }
-                
+                else
+                {
+                    Tile t = new Tile(loc, this);
+                    grid[loc.Column][loc.Row] = t;
+                }
+            }
+        }
+
+        public void tempSelectTile(Location loc, bool addingTower)
+        {
+            if (addingTower)
+            {
+                Tower tow = new Tower(loc, this);
+                grid[loc.Column][loc.Row] = tow;
             }
             else
             {
@@ -180,21 +230,71 @@ namespace BCTD
             }
         }
 
+        private void randomizeLandscape()
+        {
+            int numObjects = rand.Next(3, 11);
+
+            for (int i = 0; i < numObjects; i++)
+            {
+                if (rand.Next(1, 3) == 1)
+                {
+                    int y = rand.Next(23), x = rand.Next(10);
+                    grid[y][x] = new Rock(grid[y][x].Location, this);
+                }
+                else
+                {
+                    int y = rand.Next(23), x = rand.Next(10);
+                    grid[y][x] = new Mountain(grid[y][x].Location, this);
+                }
+            }
+        }
+
         public List<Node> findPath()
         {
             List<Node> openL, closedL;
             Node current = enter.TNode;
+            bool done = false;
 
             openL = new List<Node>();
             closedL = new List<Node>();
 
-            closedL.Add(current);
+            openL.Add(current);
+            
+            while (!done && openL.Count != 0)
+            {
+                int lowF = int.MaxValue;
+                Node lowNode = new Node(Vector2.Zero, Location.Zero);
+                foreach (Node node in openL)
+                {
+                    if (node.F < lowF && !listContains(closedL, node))
+                    {
+                        lowNode = node;
+                        lowF = node.F;
+                    }
+                }
+                current = lowNode;
+                openL.Remove(current);
+                closedL.Add(current);
 
-            do
-            {               
-
+                
                 foreach (Tile tile in getAdjacent(current.Loc))
                 {
+                    if (tile.GetType() == typeof(Exit))
+                    {
+                        Node node = tile.TNode;
+                        node.parent = current;
+                        node.G = 1 + current.G;
+
+                        int xDis = Math.Abs(node.Loc.Column - exit.Location.Column);
+                        int yDis = Math.Abs(node.Loc.Row - exit.Location.Row);
+
+                        node.H = xDis + yDis;
+                        openL.Add(node);
+                        tile.TNode = node;
+
+                        done = true;
+                        break;
+                    }
                     if (!listContains(closedL, tile.TNode) && tile.GetType() == typeof(Tile))
                         if (!listContains(openL, tile.TNode))
                         {
@@ -207,6 +307,7 @@ namespace BCTD
 
                             node.H = xDis + yDis;
                             openL.Add(node);
+                            tile.TNode = node;
                         }
                         else
                         {
@@ -218,42 +319,241 @@ namespace BCTD
                         }
                 }
 
-                //get lowest F on openL
                 //int lowF = int.MaxValue;
-                //Node lowNode = new Node(Vector2.Zero, Location.Zero);
-                //foreach (Node node in openL)
+                //Tile lowTile = new Tile(Location.Zero, this);
+                //foreach (Tile tile in getAdjacent(current.Loc))
                 //{
-                //    if (node.F < lowF && !closedL.Contains(node))
+                //    if (tile.TNode.F < lowF && !listContains(closedL, tile.TNode))
                 //    {
-                //        lowNode = node;
-                //        lowF = node.F;
+                //        lowTile = tile;
+                //        lowF = tile.TNode.F;
                 //    }
                 //}
 
-                int lowF = int.MaxValue;
-                Tile lowTile = new Tile(Location.Zero, this);
-                foreach (Tile tile in getAdjacent(current.Loc))
-                {
-                    if (tile.TNode.F < lowF && !listContains(closedL, tile.TNode))
-                    {
-                        lowTile = tile;
-                        lowF = tile.TNode.F;
-                    }
-                }
-                current = lowTile.TNode;
-                closedL.Add(current);
-                openL.Remove(current);
+                
 
             }
-            while (openL.Count > 0 && !current.Loc.Equals(exit.Location));
 
+            if (done)
+            {
+                List<Node> path = new List<Node>();
 
-            if (current.Loc.Equals(exit.Location))
-                return closedL;
+                path.Add(exit.TNode);
+
+                Node parent = current;
+                path.Add(current);
+                do
+                {
+                    if (parent.parent != null)
+                        path.Add(parent.parent);
+                    parent = parent.parent;
+                }
+                while (parent != null);
+                return path;
+            }
             else
                 return null;
 
         }
+
+        public List<Node> testPath(Node blockedNode)
+        {
+            List<Node> openL, closedL;
+            Node current = enter.TNode;
+            bool done = false;
+
+            openL = new List<Node>();
+            closedL = new List<Node>();
+
+            openL.Add(current);
+            closedL.Add(blockedNode);
+
+            while (!done && openL.Count != 0)
+            {
+                int lowF = int.MaxValue;
+                Node lowNode = new Node(Vector2.Zero, Location.Zero);
+                foreach (Node node in openL)
+                {
+                    if (node.F < lowF && !listContains(closedL, node))
+                    {
+                        lowNode = node;
+                        lowF = node.F;
+                    }
+                }
+                current = lowNode;
+                openL.Remove(current);
+                closedL.Add(current);
+
+
+                foreach (Tile tile in getAdjacent(current.Loc))
+                {
+                    if (tile.GetType() == typeof(Exit))
+                    {
+                        Node node = tile.TNode;
+                        node.parent = current;
+                        node.G = 1 + current.G;
+
+                        int xDis = Math.Abs(node.Loc.Column - exit.Location.Column);
+                        int yDis = Math.Abs(node.Loc.Row - exit.Location.Row);
+
+                        node.H = xDis + yDis;
+                        openL.Add(node);
+                        tile.TNode = node;
+
+                        done = true;
+                        break;
+                    }
+                    if (!listContains(closedL, tile.TNode) && tile.GetType() == typeof(Tile))
+                        if (!listContains(openL, tile.TNode))
+                        {
+                            Node node = tile.TNode;
+                            node.parent = current;
+                            node.G = 1 + current.G;
+
+                            int xDis = Math.Abs(node.Loc.Column - exit.Location.Column);
+                            int yDis = Math.Abs(node.Loc.Row - exit.Location.Row);
+
+                            node.H = xDis + yDis;
+                            openL.Add(node);
+                            tile.TNode = node;
+                        }
+                        else
+                        {
+                            if (1 + current.G > tile.TNode.G)
+                            {
+                                tile.TNode.parent = current;
+                                tile.TNode.G = 1 + tile.TNode.G;
+                            }
+                        }
+                }
+
+                //int lowF = int.MaxValue;
+                //Tile lowTile = new Tile(Location.Zero, this);
+                //foreach (Tile tile in getAdjacent(current.Loc))
+                //{
+                //    if (tile.TNode.F < lowF && !listContains(closedL, tile.TNode))
+                //    {
+                //        lowTile = tile;
+                //        lowF = tile.TNode.F;
+                //    }
+                //}
+
+
+
+            }
+
+            if (done)
+            {
+                List<Node> path = new List<Node>();
+
+                path.Add(exit.TNode);
+
+                Node parent = current;
+                path.Add(current);
+                do
+                {
+                    if (parent.parent != null)
+                        path.Add(parent.parent);
+                    parent = parent.parent;
+                }
+                while (parent != null);
+                return path;
+            }
+            else
+                return null;
+        }
+
+        //public List<Node> testPath(Node blockedNode)
+        //{
+        //    List<Node> openL, closedL;
+        //    Node current = enter.TNode;
+
+        //    openL = new List<Node>();
+        //    closedL = new List<Node>();
+
+        //    closedL.Add(current);
+        //    closedL.Add(blockedNode);
+
+        //    do
+        //    {
+
+        //        foreach (Tile tile in getAdjacent(current.Loc))
+        //        {
+        //            if (!listContains(closedL, tile.TNode) && tile.GetType() == typeof(Tile))
+        //                if (!listContains(openL, tile.TNode))
+        //                {
+        //                    Node node = tile.TNode;
+        //                    node.parent = current;
+        //                    node.G = 1 + current.G;
+
+        //                    int xDis = Math.Abs(node.Loc.Column - exit.Location.Column);
+        //                    int yDis = Math.Abs(node.Loc.Row - exit.Location.Row);
+
+        //                    node.H = xDis + yDis;
+        //                    openL.Add(node);
+        //                    tile.TNode = node;
+
+        //                }
+        //                else
+        //                {
+        //                    if (1 + current.G > tile.TNode.G)
+        //                    {
+        //                        tile.TNode.parent = current;
+        //                        tile.TNode.G = 1 + tile.TNode.G;
+        //                    }
+        //                }
+        //        }
+
+        //        //int lowF = int.MaxValue;
+        //        //Tile lowTile = new Tile(Location.Zero, this);
+        //        //foreach (Tile tile in getAdjacent(current.Loc))
+        //        //{
+        //        //    if (tile.TNode.F < lowF && !listContains(closedL, tile.TNode) && !tile.TNode.Equals(blockedNode))
+        //        //    {
+        //        //        lowTile = tile;
+        //        //        lowF = tile.TNode.F;
+        //        //    }
+        //        //}
+        //        //current = lowTile.TNode;
+
+        //        int lowF = int.MaxValue;
+        //        Node lowNode = new Node(Vector2.Zero, Location.Zero);
+        //        foreach (Node node in openL)
+        //        {
+        //            if (node.F < lowF && !listContains(closedL, node))
+        //            {
+        //                lowNode = node;
+        //                lowF = node.F;
+        //            }
+        //        }
+        //        current = lowNode;
+        //        closedL.Add(current);
+        //        openL.Remove(current);
+
+        //    }
+        //    while (openL.Count > 0 && !current.Loc.Equals(exit.Location));
+
+        //    if (current.Loc.Equals(exit.Location))
+        //    {
+        //        List<Node> path = new List<Node>();
+
+        //        path.Add(exit.TNode);
+
+        //        Node parent = current;
+        //        path.Add(current);
+        //        do
+        //        {
+        //            if (parent.parent != null)
+        //                path.Add(parent.parent);
+        //            parent = parent.parent;
+        //        }
+        //        while (parent != null);
+        //        return path;
+        //    }
+        //    else
+        //        return null;
+
+        //}
 
         public List<Tile> getAdjacent(Location loc)
         {

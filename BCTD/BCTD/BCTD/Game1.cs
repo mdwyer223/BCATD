@@ -18,6 +18,8 @@ namespace BCTD
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        MainMenu menu;
+
         Grid grid;
         MouseState mouse;
 
@@ -26,10 +28,11 @@ namespace BCTD
         {
             get { return gameContent; }
         }
-        static GameState state = GameState.CONSTRUCTING;
+        static GameState state = GameState.MAIN_MENU;
         public static GameState MainState
         {
             get { return state; }
+            set { state = value; }
         }
 
         public Game1()
@@ -43,6 +46,7 @@ namespace BCTD
         protected override void Initialize()
         {
             grid = new Grid();
+            menu = new MainMenu();
             base.Initialize();
         }
 
@@ -64,7 +68,15 @@ namespace BCTD
             {
                 state = GameState.CONSTRUCTING;
             }
-            grid.Update(gameTime);
+
+            if(state == GameState.PLAYING || state == GameState.CONSTRUCTING)
+            {
+                grid.Update(gameTime);
+            }
+            else if (state == GameState.MAIN_MENU)
+            {
+                menu.Update(gameTime);
+            }
             base.Update(gameTime);
         }
 
@@ -72,7 +84,14 @@ namespace BCTD
         {
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
-            grid.Draw(spriteBatch);
+            if (state == GameState.PLAYING || state == GameState.CONSTRUCTING)
+            {
+                grid.Draw(spriteBatch);
+            }
+            else if (state == GameState.MAIN_MENU)
+            {
+                menu.Draw(spriteBatch);
+            }
             spriteBatch.Draw(Content.Load<Texture2D>("cursor"), new Rectangle(mouse.X, mouse.Y, 10, 10), Color.White);
             spriteBatch.End();
             base.Draw(gameTime);

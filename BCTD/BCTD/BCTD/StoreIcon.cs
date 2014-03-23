@@ -35,6 +35,10 @@ namespace BCTD
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            if (type == TowerType.TOWER)
+            {
+                color = Color.Gray;
+            }
             if (drawStats)
             {
                 spriteBatch.DrawString(font, "Tower\n10\n10m", new Vector2(rec.X + rec.Width, rec.Y), Color.White);

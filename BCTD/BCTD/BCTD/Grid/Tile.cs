@@ -52,22 +52,30 @@ namespace BCTD
             mouse = Mouse.GetState();
             if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(this.rec))
             {
-                if (this.GetType() == typeof(Tile))
-                {
-                    this.color = Color.Green;
-                    if (mouse.LeftButton.Equals(ButtonState.Pressed))
+                if(Game1.MainState == GameState.CONSTRUCTING)
+                    if (this.GetType() == typeof(Tile))
                     {
-                        grid.selectTile(loc, this);
+                        if (grid.testPath(node) != null)
+                        {
+                            this.color = Color.Green;
+                            if (mouse.LeftButton.Equals(ButtonState.Pressed))
+                            {
+                                grid.selectTile(loc, this);
+                            }
+                        }
+                        else
+                        {
+                            this.color = Color.Red;
+                        }
                     }
-                }
-                else
-                {
-                    this.color = Color.Red;
-                    if (mouse.RightButton.Equals(ButtonState.Pressed))
+                    else
                     {
-                        grid.selectTile(loc, this);
+                        this.color = Color.Red;
+                        if (mouse.RightButton.Equals(ButtonState.Pressed))
+                        {
+                            grid.selectTile(loc, this);
+                        }
                     }
-                }
             }
             else
             {
