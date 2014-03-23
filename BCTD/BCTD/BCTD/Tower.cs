@@ -14,6 +14,7 @@ namespace BCTD
         protected List<Bullet> bullets;
         protected Color towerColor;
         protected Enemy currentTarget;
+        protected Texture2D turretTop;
 
         protected int bulletTimer, fireRate, damage = 10;
         
@@ -34,6 +35,9 @@ namespace BCTD
 
             cost = 100;
             range = 200;
+
+            texture = Game1.GameContent.Load<Texture2D>("Base");
+            turretTop = Game1.GameContent.Load<Texture2D>("GatlingGun");
         }
 
         public override void Update(GameTime gameTime, Grid grid)
@@ -50,7 +54,7 @@ namespace BCTD
                     spawnBullet(grid.Enemies);
                 }
 
-                color = towerColor;
+                color = Color.White;
 
                 for (int i = 0; i < bullets.Count; i++)
                 {
@@ -75,9 +79,9 @@ namespace BCTD
             spriteBatch.Draw(texture, rec, color);
             if(currentTarget != null)
             {
-                spriteBatch.Draw(Game1.GameContent.Load<Texture2D>("turret"), new Rectangle((int)this.Center.X, (int)this.Center.Y, 30, 30), 
-                    null, Color.White, (float)Math.Atan2((currentTarget.Position.Y - Center.Y), (currentTarget.Position.X - Center.X)), 
-                    new Vector2(Game1.GameContent.Load<Texture2D>("turret").Width / 2, Game1.GameContent.Load<Texture2D>("turret").Height / 2), SpriteEffects.None, 0);
+                spriteBatch.Draw(turretTop, new Rectangle((int)this.Center.X, (int)this.Center.Y, 30, 15), 
+                    null, Color.White, ((float)(Math.Atan2((currentTarget.Position.Y - Center.Y), (currentTarget.Position.X - Center.X))) - MathHelper.Pi), 
+                    new Vector2(turretTop.Width / 2, turretTop.Height / 2), SpriteEffects.None, 0);
             }
             spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y, rec.Width, 1), Color.Black);
             spriteBatch.Draw(texture, new Rectangle(rec.X, rec.Y + rec.Height - 1, rec.Width, 1), Color.Black);

@@ -23,6 +23,8 @@ namespace BCTD
         Grid grid;
         MouseState mouse;
 
+        KeyboardState keys, oldKeys;
+
         static ContentManager gameContent;
         public static ContentManager GameContent
         {
@@ -47,6 +49,7 @@ namespace BCTD
         {
             grid = new Grid();
             menu = new MainMenu();
+            keys = oldKeys = Keyboard.GetState();
             base.Initialize();
         }
 
@@ -59,14 +62,18 @@ namespace BCTD
         protected override void Update(GameTime gameTime)
         {
             mouse = Mouse.GetState();
+            keys = Keyboard.GetState();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+            if (keys.IsKeyDown(Keys.Enter) && oldKeys.IsKeyUp(Keys.Enter))
             {
-                state = GameState.PLAYING;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                state = GameState.CONSTRUCTING;
+                if (state == GameState.PLAYING)
+                {
+                    state = GameState.CONSTRUCTING;
+                }
+                else if (state == GameState.CONSTRUCTING)
+                {
+                    state = GameState.PLAYING;
+                }
             }
 
             if(state == GameState.PLAYING || state == GameState.CONSTRUCTING)
@@ -77,6 +84,7 @@ namespace BCTD
             {
                 menu.Update(gameTime);
             }
+            oldKeys = keys;
             base.Update(gameTime);
         }
 

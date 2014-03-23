@@ -13,6 +13,7 @@ namespace BCTD
     {
         TowerType type;
         SpriteFont font;
+        Texture2D top;
         bool drawStats;
 
         public TowerType Type
@@ -37,7 +38,13 @@ namespace BCTD
         {
             if (type == TowerType.TOWER)
             {
-                color = Color.Gray;
+                texture = Game1.GameContent.Load<Texture2D>("Base");
+                top = Game1.GameContent.Load<Texture2D>("GatlingGun");
+            }
+            else if (type == TowerType.HOMING)
+            {
+                texture = Game1.GameContent.Load<Texture2D>("Base2");
+                top = Game1.GameContent.Load<Texture2D>("Turret2");
             }
             if (drawStats)
             {
@@ -50,7 +57,8 @@ namespace BCTD
                     spriteBatch.DrawString(font, "Homing\n20\n30m", new Vector2(Rec.X + Rec.Width, rec.Y), Color.Yellow);
                 }
             }
-            base.Draw(spriteBatch);
+            spriteBatch.Draw(texture, rec, color);
+            //spriteBatch.Draw(top, new Rectangle(Rec.X, Rec.Y, 30, 15), color);
         }
     }
 }

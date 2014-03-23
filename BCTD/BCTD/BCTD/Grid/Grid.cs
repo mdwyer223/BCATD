@@ -33,7 +33,6 @@ namespace BCTD
 
         int delay = 50, delayTimer = 0;
 
-
         public int TileWidth
         {
             get { return (int)tWidth; }
@@ -176,6 +175,7 @@ namespace BCTD
             store.Draw(spriteBatch);
             spriteBatch.DrawString(font, "$" + funds, new Vector2(3, 3), Color.White);
             spriteBatch.DrawString(font, "Level: " + level, new Vector2(800 - font.MeasureString("Level: 9999").X, 3), Color.White);
+            spriteBatch.DrawString(font, "Lives: " + lives, new Vector2(400 - (font.MeasureString("Lives: 111").X / 2), 3), Color.White);
         }
 
         public void selectTile(Location loc, Tile check)
@@ -235,14 +235,18 @@ namespace BCTD
 
         public void spawner(GameTime gametime)
         {
-            if (level >= 30)
+            if (level >= 31)
                 spawnLimit = 50;
+            else if (level == 30)
+                spawnLimit = 5;
             else if (level >= 25)
                 spawnLimit = 45;
             else if (level >= 20)
                 spawnLimit = 40;
-            else if (level >= 15)
+            else if (level >= 16)
                 spawnLimit = 30;
+            else if (level == 15)
+                spawnLimit = 2;
             else if (level >= 10)
                 spawnLimit = 25;
             else if (level >= 5)
@@ -253,17 +257,25 @@ namespace BCTD
             timer += gametime.ElapsedGameTime.TotalSeconds;
             if (timer >= spawnTime && spawncounter < spawnLimit)
             {
-                if (level >= 20)
+                if (level == 30)
+                {
+                    enemies.Add(new Boss(this, enter));
+                }
+                else if (level >= 20)
                 {
                     enemies.Add(new Enemy(this, enter));
                     enemies.Add(new SpeedyEnemy(this, enter));
                     enemies.Add(new TankEnemy(this, enter));
                 }
-                else if (level >= 15)
+                else if (level >= 16)
                 {
                     //enemies.Add(new Enemy(this, enter));
                     enemies.Add(new SpeedyEnemy(this, enter));
                     enemies.Add(new TankEnemy(this, enter));
+                }
+                else if (level == 15)
+                {
+                    enemies.Add(new Boss(this, enter));
                 }
                 else if (level >= 10)
                 {
