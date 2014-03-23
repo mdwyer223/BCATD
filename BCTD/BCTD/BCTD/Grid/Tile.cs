@@ -31,8 +31,9 @@ namespace BCTD
             get { return this.GetType() == typeof(Tile); }
         }
 
-        public Tile(Location loc, Rectangle rec, Color color)
-            :base (loc.Position, rec, color)
+        public Tile(Location loc, Grid gr)
+            : base(loc.Position, 
+                new Rectangle((int)(loc.Column * gr.TileWidth + gr.Position.X), (int)(loc.Row * gr.TileHeight + gr.Position.Y), gr.TileWidth, gr.TileHeight))
         {
         }
 

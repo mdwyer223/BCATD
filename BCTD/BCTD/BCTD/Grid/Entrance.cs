@@ -9,19 +9,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BCTD
 {
-    public class Enemy : BaseSprite
+    public class Entrance : Tile
     {
-        private Vector2 velo;
-
-        public Vector2 Velocity
+        public Entrance(Location loc, Grid gr)
+            :base(loc, gr)
         {
-            get { return velo; }
-        }
-
-        public Enemy()
-            : base(Vector2.Zero, new Rectangle(0, 0, 0, 0))
-        {
-
         }
     }
 }

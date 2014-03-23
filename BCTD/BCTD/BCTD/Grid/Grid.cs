@@ -17,16 +17,36 @@ namespace BCTD
         int rows, columns;
         float tWidth, tHeight;
 
+        public int TileWidth
+        {
+            get { return (int)tWidth; }
+        }
+
+        public int TileHeight
+        {
+            get { return (int)tHeight; }
+        }
+
+        public Vector2 Position
+        {
+            get { return startPos; }
+        }
+
+        Random rand = new Random();
+
         public Grid()
         {
             grid = new List<List<Tile>>();
             rows = 12;
             columns = 24;
 
-            tHeight =30;
-            tWidth = 30;
+            tHeight = 30;
+            tWidth = 30;            
 
             generateTiles();
+
+            // this.add(new Entrance(randomLoc);
+            // this.add(new Exit(randomLoc);
         }
 
         public Grid(int rows, int columns)
@@ -34,7 +54,11 @@ namespace BCTD
             grid = new List<List<Tile>>();
             this.rows = rows;
             this.columns = columns;
+
             generateTiles();
+
+            // this.add(new Entrance(randomLoc);
+            // this.add(new Exit(randomLoc);
         }
 
         public virtual void Update(GameTime gameTime)
@@ -71,10 +95,39 @@ namespace BCTD
                 grid.Add(new List<Tile>());
                 for (int y = 0; y < rows; y++)
                 {
-                    Location loc = new Location(new Vector2((x * tWidth), y * tHeight) + startPos, y, x); 
-                    grid[x].Add(new Tile(loc, new Rectangle((int)loc.Position.X, (int)loc.Position.Y, (int)tWidth, (int)tHeight), Color.White));
+                    Location loc = new Location(y, x); 
+                    grid[x].Add(new Tile(loc, this));
                 }
             }
+        }
+
+        public List<Tile> findPath()
+        {
+            List<Tile> openL, closedL;
+            Tile current = new Tile(Location.Zero, this);
+
+            openL = new List<Tile>();
+            closedL = new List<Tile>();
+
+            {
+
+
+                // path stuff
+
+            }
+            while (current.GetType() != typeof(Exit) || openL.Count > 0);
+
+
+            if (current.GetType() == typeof(Exit))
+                return closedL;
+            else
+                return null;
+
+        }
+
+        public Tile getAdjacent(Location loc)
+        {
+            return new Tile(Location.Zero, this);
         }
     }
 }

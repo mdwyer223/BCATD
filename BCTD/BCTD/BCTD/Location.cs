@@ -30,11 +30,22 @@ namespace BCTD
             get { return column; }
         }
 
-        public Location(Vector2 pos, int row, int column)
+        public static Location Zero
         {
-            this.pos = pos;
+            get { return new Location(0, 0); }
+        }
+
+        public Location(int row, int column)
+        {
             this.row = row;
             this.column = column;
         }
+
+        public override bool Equals(object obj)
+        {
+            Location loc = (Location)obj;
+            return loc.Row == this.Row && loc.Column == this.Column;
+        }
+
     }
 }

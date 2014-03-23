@@ -11,8 +11,8 @@ namespace BCTD
 {
     public class Tower : Tile
     {
-        public Tower()
-            : base(null, new Rectangle(0, 0, 0, 0), Color.White)
+        public Tower(Location loc, Grid gr)
+            : base(loc, gr)
         {
 
         }

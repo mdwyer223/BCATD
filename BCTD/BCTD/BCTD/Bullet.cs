@@ -12,7 +12,7 @@ namespace BCTD
     public class Bullet : BaseSprite
     {
         public Bullet()
-            : base(Vector2.Zero, new Rectangle(0,0,0,0), Color.White)
+            : base(Vector2.Zero, new Rectangle(0,0,0,0))
         {
 
         }
