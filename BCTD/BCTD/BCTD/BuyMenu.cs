@@ -17,6 +17,7 @@ namespace BCTD
         List<StoreIcon> icons;
         SpriteFont font;
         MouseState mouse;
+        Vector2 botGrid;
 
         TowerType buyType;
         public TowerType BuyType
@@ -28,6 +29,7 @@ namespace BCTD
         {
             icons = new List<StoreIcon>();
             font = Game1.GameContent.Load<SpriteFont>("StoreFont");
+            botGrid = bottomOfGrid;
 
             icons.Add(new StoreIcon(bottomOfGrid, new Rectangle((int)bottomOfGrid.X, (int)bottomOfGrid.Y, 30, 30), TowerType.TOWER));
             icons.Add(new StoreIcon(new Vector2((bottomOfGrid.X + 80), bottomOfGrid.Y), new Rectangle((int)(bottomOfGrid.X + 80), (int)bottomOfGrid.Y, 30,30), TowerType.HOMING));
@@ -59,6 +61,11 @@ namespace BCTD
         {
             foreach (StoreIcon s in icons)
                 s.Draw(spriteBatch);
+
+            spriteBatch.DrawString(font, "Left click to buy towers", new Vector2(botGrid.X + 200, botGrid.Y), Color.White);
+            spriteBatch.DrawString(font, "Right click to destroy towers", new Vector2 (botGrid.X + 200, botGrid.Y + 20), Color.White);
+            spriteBatch.DrawString(font, "Enter to toggle construction", new Vector2(botGrid.X + 420, botGrid.Y), Color.White);
+
         }
     }
 }

@@ -89,6 +89,11 @@ namespace BCTD
             {
                 if (!e.IsDead)
                 {
+                    if (e.GetType() == typeof(SpeedyEnemy))
+                    {
+                        target = e;
+                        break;
+                    }
                     if (measureDis(Center, e.Position) < smallestDistance)
                     {
                         target = e;
@@ -96,6 +101,7 @@ namespace BCTD
                     }
                 }
             }
+
             if (target != null && measureDis(Center, target.Position) < range)
             {
                 currentTarget = target;

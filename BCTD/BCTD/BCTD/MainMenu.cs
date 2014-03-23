@@ -50,7 +50,7 @@ namespace BCTD
             spriteBatch.DrawString(display, "Press to start!", new Vector2(newGame.Center.X - (display.MeasureString("Press to Start!").X / 2),
                 newGame.Y + 1), Color.White);
 
-            spriteBatch.DrawString(head, "BCTD", new Vector2(400 - (head.MeasureString("BCTD").X / 2), 100), Color.White);
+            spriteBatch.DrawString(head, "TowDef", new Vector2(400 - (head.MeasureString("BCTD").X / 2), 100), Color.White);
         }
     }
 }

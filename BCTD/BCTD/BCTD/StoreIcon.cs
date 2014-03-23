@@ -50,11 +50,11 @@ namespace BCTD
             {
                 if (type == TowerType.TOWER)
                 {
-                    spriteBatch.DrawString(font, "Tower\n10\n10m", new Vector2(Rec.X + Rec.Width, rec.Y), Color.Gray);
+                    spriteBatch.DrawString(font, "Tower\n10d\n$" + 100, new Vector2(Rec.X + Rec.Width, rec.Y), Color.Gray);
                 }
                 else if (type == TowerType.HOMING)
                 {
-                    spriteBatch.DrawString(font, "Homing\n20\n30m", new Vector2(Rec.X + Rec.Width, rec.Y), Color.Yellow);
+                    spriteBatch.DrawString(font, "Homing\n20d\n$" + 200, new Vector2(Rec.X + Rec.Width, rec.Y), Color.Yellow);
                 }
             }
             spriteBatch.Draw(texture, rec, color);

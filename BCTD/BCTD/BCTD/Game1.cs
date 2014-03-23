@@ -19,8 +19,10 @@ namespace BCTD
         SpriteBatch spriteBatch;
 
         MainMenu menu;
+        GameOver gMenu;
 
         Grid grid;
+        MenuGrid menGrid;
         MouseState mouse;
 
         KeyboardState keys, oldKeys;
@@ -48,7 +50,9 @@ namespace BCTD
         protected override void Initialize()
         {
             grid = new Grid();
+            menGrid = new MenuGrid();
             menu = new MainMenu();
+            gMenu = new GameOver();
             keys = oldKeys = Keyboard.GetState();
             base.Initialize();
         }
@@ -57,7 +61,6 @@ namespace BCTD
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
-
 
         protected override void Update(GameTime gameTime)
         {
@@ -82,7 +85,16 @@ namespace BCTD
             }
             else if (state == GameState.MAIN_MENU)
             {
+                menGrid.Update(gameTime);
                 menu.Update(gameTime);
+            }
+            else if (state == GameState.GAME_OVER)
+            {
+                gMenu.Update(gameTime);
+                if(gMenu.SpacePressed)
+                {
+                    reset();
+                }
             }
             oldKeys = keys;
             base.Update(gameTime);
@@ -98,11 +110,22 @@ namespace BCTD
             }
             else if (state == GameState.MAIN_MENU)
             {
+                menGrid.Draw(spriteBatch);
                 menu.Draw(spriteBatch);
+            }
+            else if (state == GameState.GAME_OVER)
+            {
+                gMenu.Draw(spriteBatch);
             }
             spriteBatch.Draw(Content.Load<Texture2D>("cursor"), new Rectangle(mouse.X, mouse.Y, 10, 10), Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        protected void reset()
+        {
+            grid = new Grid();
+            state = GameState.MAIN_MENU;
         }
     }
 }

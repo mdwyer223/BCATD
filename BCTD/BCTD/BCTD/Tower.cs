@@ -16,7 +16,7 @@ namespace BCTD
         protected Enemy currentTarget;
         protected Texture2D turretTop;
 
-        protected int bulletTimer, fireRate, damage = 10;
+        protected int bulletTimer, fireRate, damage = 5;
         
         protected int cost = 0, range;
 
@@ -74,6 +74,33 @@ namespace BCTD
             }
         }
 
+        public virtual void Update(Enemy e)
+        {
+            if (bulletTimer < fireRate)
+            {
+                bulletTimer++;
+            }
+            else
+            {
+                bulletTimer = 0;
+                spawnBullet(e);
+            }
+
+            color = Color.White;
+
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                if (bullets[i] != null)
+                {
+                    bullets[i].Update();
+                    if (bullets[i].OffScreen)
+                    {
+                        bullets.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, rec, color);
@@ -115,6 +142,17 @@ namespace BCTD
                 currentTarget = target;
                 bullets.Add(new Bullet(this.Center, target, BulletType.STRAIGHT, damage));
             }
+        }
+
+        protected virtual void spawnBullet(Enemy e)
+        {
+            if (e != null)
+            {
+                Enemy target = e;
+                currentTarget = target;
+                bullets.Add(new Bullet(this.Center, target, BulletType.STRAIGHT, damage));
+            }
+            
         }
     }
 }

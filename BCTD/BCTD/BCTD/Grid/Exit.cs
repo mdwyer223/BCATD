@@ -14,6 +14,12 @@ namespace BCTD
         public Exit(Location loc, Grid gr)
             : base(loc, gr)
         {
+            texture = Game1.GameContent.Load<Texture2D>("Gate");
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(texture, Rec, color);
         }
     }
 }

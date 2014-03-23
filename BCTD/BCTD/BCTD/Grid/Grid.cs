@@ -12,15 +12,15 @@ namespace BCTD
     public class Grid
     {
         Vector2 startPos;
-        List<List<Tile>> grid;
+        protected List<List<Tile>> grid;
         List<Enemy> enemies;
         Rectangle backRec;
         Texture2D background;
-        int rows, columns;
+        protected int rows, columns;
         float tWidth, tHeight;
 
         double timer = 0;
-        int spawnTime = 3, spawnLimit, spawncounter;
+        float spawnTime = 3, spawnLimit, spawncounter;
 
         BuyMenu store;
         int funds = 500;
@@ -66,6 +66,7 @@ namespace BCTD
 
             tHeight = 30;
             tWidth = 30;            
+
 
             generateTiles();
             randomizeLandscape();
@@ -132,11 +133,22 @@ namespace BCTD
                         if (enemies[i] != null)
                         {
                             enemies[i].Update(gameTime, this);
-                            if (enemies[i].IsDead)
+                            if (enemies[i].atEnd)
+                            {
+                                lives--;
+                                enemies.RemoveAt(i);
+                                if (lives <= 0)
+                                {
+                                    Game1.MainState = GameState.GAME_OVER;
+                                    return;
+                                }
+                            }
+                            else if (enemies[i].IsDead)
                             {
                                 funds += enemies[i].Price;
                                 enemies.RemoveAt(i);
                             }
+                            
                         }
                     }
                 }
@@ -242,24 +254,26 @@ namespace BCTD
 
         public void spawner(GameTime gametime)
         {
-            if (level >= 31)
-                spawnLimit = 50;
-            else if (level == 30)
-                spawnLimit = 5;
-            else if (level >= 25)
-                spawnLimit = 45;
-            else if (level >= 20)
-                spawnLimit = 40;
-            else if (level >= 16)
-                spawnLimit = 30;
-            else if (level == 15)
-                spawnLimit = 2;
-            else if (level >= 10)
-                spawnLimit = 25;
-            else if (level >= 5)
-                spawnLimit = 15;
-            else
-                spawnLimit = 10;
+            //if (level >= 31)
+            //    spawnLimit = 55;
+            //else if (level == 30)
+            //    spawnLimit = 50;
+            //else if (level >= 25)
+            //    spawnLimit = 45;
+            //else if (level >= 20)
+            //    spawnLimit = 40;
+            //else if (level >= 16)
+            //    spawnLimit = 30;
+            //else if (level == 15)
+            //    spawnLimit = 20;
+            //else if (level >= 10)
+            //    spawnLimit = 25;
+            //else if (level >= 5)
+            //    spawnLimit = 15;
+            //else
+            //    spawnLimit = 10;
+
+            spawnLimit = 5 + level;
             //check timer
             timer += gametime.ElapsedGameTime.TotalSeconds;
             if (timer >= spawnTime && spawncounter < spawnLimit)
@@ -300,7 +314,7 @@ namespace BCTD
                 {
                     enemies.Add(new Enemy(this, enter));
                 }
-                spawnTime = spawnTime - (level / 30);
+                spawnTime = 4 - (.2f * level);
                 spawncounter++;
                 timer = 0;
             }
