@@ -13,7 +13,7 @@ namespace BCTD
     {
         protected Rectangle rec;
         protected Texture2D texture;
-        protected Vector2 position;
+        protected Vector2 position; 
         protected Color color;
 
         public Rectangle Rec
